@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+{% block content %}
+<!-- wishlist are start-->
+<div class="wishlist-area ptb-70">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h4>My Wishlist Products</h4>
+                <div class="cart-page-area">
+                    <form method="post" action="#">
+                        <div class="table-responsive">
+                            <table class="shop_table-2 cart table">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail ">Image</th>
+                                        <th class="product-name ">Product Name</th>
+                                        <th class="product-price ">Unit Price</th>
+                                        <th class="product-subtotal ">Company</th>
+                                        <th class="product-quantity">Buy Item</th>
+                                        <th class="product-remove">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                    <tr class="cart_item">
+                                        <td class="item-img">
+                                            <a href="{{product.link}}" target="_blank"><img src="{{product.img_src}}" alt=""> </a>
+                                        </td>
+                                        <td class="item-title"> <a href="{{product.link}}" target="_blank">{{product.title}}</a></td>
+                                        <td class="item-price">{{product.price}}</td>
+                                        <td class="item-qty">
+                                            {% if product.company == 'amazon' %}
+                                                <i class="fab fa-amazon"></i>
+                                            {% else %}
+                                                <i class="fa-solid fa-cart-flatbed-suitcase"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td class="total-price"><a class="btn-def btn2" href="{{product.link}}" target="_blank">Go Buy</a></td>
+                                        <a data-link="{{data.link}}"
+                                                        data-img="{{data.img}}"
+                                                        data-title="{{title}}"
+                                                        data-price="{{data.price}}"
+                                                        data-rate-star="{{data.rating_stars}}"
+                                                        data-rateempty="{{data.empty_stars}}"
+                                                        data-company="{{data.company}}"
+                                                        href="{% url 'wishlist' %}" data-tooltip="Wishlist" class="remove-list">
+                                                            <i class="fa fa-trash-o"></i>
+                                        </a>
+                                        <td class="remove-item"><a href="#"><i class="fa fa-trash-o"></i></a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- wishlist are end-->
+{% endblock content %}
