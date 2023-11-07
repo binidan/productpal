@@ -91,12 +91,27 @@ def shop(request):
         if data['rate'] is not None:
             data['rating_stars'] = range(round(float(data['rate'])))
             data['empty_stars'] = range(5 - round(float(data['rate'])))
+    products_recom = {}  # Use a list to store multiple products
+    if request.user.is_authenticated:
+        customer = request.user
+        products_lst = Product.objects.filter(customer=customer)
+        for product in products_lst:
+            title = product.title
+            product_info = scrapper.product_scraper(title)
+
+            if product_info:
+                # Add the first product's key-value pairs to the 'products' dictionary
+                for key, value in product_info.items():
+                    products_recom[key] = value
+                    break
 
     context = {
+        'products_recom': products_recom,
         'products': products,
         'q': q,  # Pass the search query back to the template
     }
     return render(request, 'base/shop.html', context)
+
 
 def loginPage(request):
     page = 'login'

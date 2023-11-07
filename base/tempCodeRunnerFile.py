@@ -1,55 +1,21 @@
-import requests
-from bs4 import BeautifulSoup
+def recommendation(request):
+    products = {}  # Use a list to store multiple products
+    if request.user.is_authenticated:
+        user = request.user
+        products_lst = Product.objects.filter(customer=user)
+        for product in products_lst:
+            title = product.title
+            product_info = scrapper.product_scraper(title)
+            print(f"Title: {title}, Product Info: {product_info}")
 
-def product_scraper(product):
-    url_amazon = f"https://www.amazon.in/s?k={product}"
-    product_dict = {}
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36"
+            if product_info:
+                # Add the first product's key-value pairs to the 'products' dictionary
+                for key, value in product_info.items():
+                    print(f"Key: {key}, Value: {value}")
+                break
+
+    context = {
+        'products_recom': products  # Pass the list of (key, value) pairs to the template
     }
 
-    try:
-        response = requests.get(url_amazon, headers=headers)
-
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.content, 'html.parser')
-
-            products = soup.find_all('div', {'class': 's-card-container'})
-
-            for product in products:
-                title_element = product.find('span', {'class': 'a-text-normal'})
-                title = title_element.text.strip().split("|")[0] if title_element else None
-
-                rate_element = product.find('span', {'class': 'a-icon-alt'})
-                rate = rate_element.text.strip()[:3] if rate_element else None
-
-                price_element = product.find('span', {'class': 'a-offscreen'})
-                price = price_element.text.strip() if price_element else None
-
-                discount_element = product.find('span', {'class': 'a-text-price'})
-                discount_element = discount_element.find('span', {'class': 'a-offscreen'}) if discount_element else None
-                discount = discount_element.text.strip() if discount_element else None
-
-                link_element = product.find('a', {'class': 'a-link-normal s-no-outline'})
-                link = link_element.get("href") if link_element else None
-
-                img_element = product.find('img', {'class': 's-image'})
-                img = img_element.get("src") if img_element else None
-
-                product_dict[title] = {
-                    "rate": rate,
-                    "price": price,
-                    "discount": discount,
-                    "link": link,
-                    "img": img
-                }
-
-        else:
-            return response.status_code
-
-    except requests.exceptions.RequestException as e:
-        return e
-
-    return product_dict
-
-print(product_scraper("Samsung"))
+    return render(request, 'base/shop.html', context)
